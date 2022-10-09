@@ -37,16 +37,30 @@ client.on('messageCreate', async message => {
 	const command = args.shift().toLowerCase();
 
 	if(command === "play"){
-		if (!message.member.voice.channel) {
-			return message.channel.send(`❌ Debes estar conectado a un canal`)
+		if(args == ""){
+			message.channel.send(`❌ El comando no puede estar vacío`)
 		}else{
-			client.DisTube.play(message.member.voice.channel, args.join(" "), {
-				member: message.member,
-				textChannel: message.channel,
-				message
-			})
+			if (!message.member.voice.channel) {
+				return message.channel.send(`❌ Debes estar conectado a un canal`)
+			}else{
+				client.DisTube.play(message.member.voice.channel, args.join(" "), {
+					member: message.member,
+					textChannel: message.channel,
+					message
+				})
+			}
 		}
 	}
+});
+
+client.on('messageCreate', (message) => {
+    if (!message.content.startsWith(config.prefix)) return;
+    const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
+    const command = args.shift();
+    if (command === "stop") {
+        client.DisTube.stop(message);
+        message.channel.send("```⏹️ La canción se ha detenido```");
+    }
 });
 
 client.DisTube.on("playSong", (queue, song) => {
