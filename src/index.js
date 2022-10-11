@@ -23,11 +23,19 @@ const fs = require('fs');
 client.config = require('../config.json');
 client.commands = new Collection();
 client.aliases = new Collection();
-client.emotes = config.emoji
+client.emotes = config.emoji;
+
+/***************************************************************
+ *                     Bot status 
+***************************************************************/
 
 client.on('ready', () => {
 	console.log(`${client.user.tag} is ready to play music.`)
 })
+
+/***************************************************************
+ *                     Play music 
+***************************************************************/
 
 client.on('messageCreate', async message => {
 	if (message.author.bot || !message.guild) return
@@ -53,21 +61,58 @@ client.on('messageCreate', async message => {
 	}
 });
 
+client.DisTube.on("playSong", (queue, song) => {
+	queue.textChannel.send(`🎵 Esta sonando: | ${song.name} | \n\n ▶ URL del video: (${song.url})`);
+})
+
+client.DisTube.on("addSong", (queue, song) => queue.textChannel.send(
+    `La canción ${song.name} - se agregó a la cola de reproducción.`
+));
+
+
+/***************************************************************
+ *                 Pause and resume music 
+***************************************************************/
+
+
 client.on('messageCreate', (message) => {
     if (!message.content.startsWith(config.prefix)) return;
     const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
     const command = args.shift();
     if (command === "stop") {
-        client.DisTube.stop(message);
-        message.channel.send("```⏹️ La canción se ha detenido```");
+        client.DisTube.pause(message);
+        message.channel.send(`☑️ La canción se ha pausado`);
     }
 });
 
-client.DisTube.on("playSong", (queue, song) => {
-	queue.textChannel.send(`🎵 Esta sonando: | ${song.name} | \n\n ▶ URL del video: (${song.url})`);
-})
+client.on('messageCreate', (message) => {
+    if (!message.content.startsWith(config.prefix)) return;
+    const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
+    const command = args.shift();
+    if (command === "continue") {
+        client.DisTube.resume(message);
+        message.channel.send(`☑️ La canción se ha resumido`);
+    }
+});
+
+/***************************************************************
+ *                     Skip music 
+***************************************************************/
+
+client.on('messageCreate', (message) => {
+    if (!message.content.startsWith(config.prefix)) return;
+    const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
+    const command = args.shift();
+    if (command == "skip"){
+		client.DisTube.skip(message);
+		message.channel.send(`Se ha pasado a la siguiente canción`);
+	}
+});
+
+/***************************************************************
+ *                     Connection 
+***************************************************************/
 
 dotenv.config()
 const TOKEN = process.env.TOKEN;
-
 client.login(TOKEN)
