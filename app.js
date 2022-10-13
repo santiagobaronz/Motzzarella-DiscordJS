@@ -17,10 +17,10 @@ client.DisTube = new DisTube(client, {
 	emitAddListWhenCreatingQueue: false
 })
 
-const config = require('../config.json')
+const config = require('./config.json')
 const fs = require('fs');
 
-client.config = require('../config.json');
+client.config = require('./config.json');
 client.commands = new Collection();
 client.aliases = new Collection();
 client.emotes = config.emoji;
@@ -46,7 +46,7 @@ client.on('messageCreate', async message => {
 
 	if(command === "play"){
 		if(args == ""){
-			message.channel.send(`❌ El comando no puede estar vacío`)
+			message.channel.send(`❌ ¿Y qué canción le coloco? ¡No soy adivino!`)
 		}else{
 			if (!message.member.voice.channel) {
 				return message.channel.send(`❌ Debes estar conectado a un canal`)
